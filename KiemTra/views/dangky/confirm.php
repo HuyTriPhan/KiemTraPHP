@@ -10,7 +10,11 @@
     <h5>Học phần đã chọn:</h5>
     <table class="table">
         <tr><th>MãHP</th><th>Tên</th><th>Tín chỉ</th></tr>
-        <?php foreach ($hocphans as $hp): ?>
+        <?php 
+        $tongTC = 0;
+        foreach ($hocphans as $hp): 
+            $tongTC += $hp['SoTinChi'];
+        ?>
             <tr>
                 <td><?= $hp['MaHP'] ?></td>
                 <td><?= $hp['TenHP'] ?></td>
@@ -18,6 +22,9 @@
             </tr>
         <?php endforeach; ?>
     </table>
+
+    <p><strong>Số học phần:</strong> <?= count($hocphans) ?></p>
+    <p><strong>Tổng số tín chỉ:</strong> <?= $tongTC ?></p>
 
     <a href="dangky.php?confirm=1" class="btn btn-success">Xác nhận</a>
 </div>

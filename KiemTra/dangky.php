@@ -59,7 +59,9 @@ if (isset($_GET['confirm'])) {
 
     foreach ($_SESSION['cart'] as $maHP => $val) {
         $conn->query("INSERT INTO chitietdangky (MaDK, MaHP) VALUES ('$maDK', '$maHP')");
+        $conn->query("UPDATE HocPhan SET SoLuong = SoLuong - 1 WHERE MaHP = '$maHP'");
     }
+    
 
     unset($_SESSION['cart']);
     header("Location: dangky.php?success=1");
