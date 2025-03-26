@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// 1. Thông báo đăng ký thành công
+
 if (isset($_GET['success']) && $_GET['success'] == 1) {
     include './views/dangky/success.php';
     exit;
@@ -9,30 +9,49 @@ if (isset($_GET['success']) && $_GET['success'] == 1) {
 
 require_once './config/config.php';
 
-// 2. Kiểm tra đã đăng nhập chưa
+
 if (!isset($_SESSION['MaSV'])) {
     header("Location: login.php");
     exit;
 }
 
-// 3. Thêm học phần vào giỏ
+
 if (isset($_GET['add'])) {
     $mahp = $_GET['add'];
-    $_SESSION['cart'][$mahp] = true;
+    $maSV = $_SESSION['MaSV'];
+
+    // Kiểm tra đã đăng ký chưa
+    $check = $conn->query("
+        SELECT 1 FROM dangky d
+        JOIN chitietdangky c ON d.MaDK = c.MaDK
+        WHERE d.MaSV = '$maSV' AND c.MaHP = '$mahp'
+    ");
+
+    if ($check->num_rows == 0) {
+        // Chưa đăng ký => cho thêm vào giỏ
+        $_SESSION['cart'][$mahp] = true;
+    } else {
+        // Đã đăng ký => không cho thêm, hoặc có thể thông báo
+        $_SESSION['error'] = "Bạn đã đăng ký học phần này!";
+    }
+
+    header("Location: dangky.php");
+    exit;
 }
 
-// 4. Xoá 1 học phần
+
+
 if (isset($_GET['remove'])) {
     $mahp = $_GET['remove'];
     unset($_SESSION['cart'][$mahp]);
 }
 
-// 5. Xoá toàn bộ giỏ
+
 if (isset($_GET['clear'])) {
     unset($_SESSION['cart']);
 }
 
-// 6. Hiển thị trang xác nhận khi nhấn "Lưu đăng ký"
+
 if (isset($_GET['save'])) {
     $maSV = $_SESSION['MaSV'];
 
@@ -50,7 +69,7 @@ if (isset($_GET['save'])) {
     exit;
 }
 
-// 7. Khi nhấn "Xác nhận" từ trang confirm → Lưu vào CSDL
+
 if (isset($_GET['confirm'])) {
     $maSV = $_SESSION['MaSV'];
 
@@ -68,7 +87,7 @@ if (isset($_GET['confirm'])) {
     exit;
 }
 
-// 8. Hiển thị giỏ hàng hiện tại
+
 $cart = $_SESSION['cart'] ?? [];
 $data = [];
 
